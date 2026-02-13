@@ -1,0 +1,821 @@
+{
+  "name": "T-shirt - PostgreSQL",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "aarroyaveduque20@gmail.com",
+        "subject": "Registro y actualización de inventario",
+        "message": "=<div style=\"font-family: Arial, sans-serif; background-color:#f4f6f9; padding:20px;\">\n\n  <div style=\"max-width:700px; margin:0 auto; background:white; padding:25px; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.08);\">\n\n    <h2 style=\"font-weight:bold; margin-bottom:20px;\">\n      🛍 Reporte de Compras e Inventario\n    </h2>\n\n    <!-- ===================== -->\n    <!-- CORREOS VERIFICADOS -->\n    <!-- ===================== -->\n\n    <h3>📧 Correos Verificados</h3>\n\n    <table width=\"100%\" cellpadding=\"10\" cellspacing=\"0\"\n      style=\"border-collapse:separate; border-spacing:0; border-radius:12px; overflow:hidden; border:1px solid #e0e0e0; margin-bottom:25px;\">\n      \n      <tr style=\"background-color:#111827; color:white;\">\n        <th align=\"left\">Correo</th>\n        <th align=\"center\">Verificado</th>\n        <th align=\"center\">Fecha Verificación</th>\n      </tr>\n\n      {{\n        $json.data\n          .filter(item => item[\"Dirección de correo electrónico\"])\n          .map(item => `\n            <tr style=\"background-color:#fafafa;\">\n              <td style=\"border-top:1px solid #e0e0e0;\">\n                ${item[\"Dirección de correo electrónico\"]}\n              </td>\n              <td align=\"center\" style=\"border-top:1px solid #e0e0e0;\">\n                ${item.Verificado ? \"✅ Sí\" : \"❌ No\"}\n              </td>\n              <td align=\"center\" style=\"border-top:1px solid #e0e0e0;\">\n                ${new Date(item[\"Fecha verificación\"]).toLocaleString()}\n              </td>\n            </tr>\n          `).join('')\n      }}\n\n    </table>\n\n    <p style=\"margin-top:25px; font-size:12px; color:#6b7280;\">\n      Este correo fue generado automáticamente por el sistema.\n    </p>\n\n  </div>\n\n</div>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        -288
+      ],
+      "id": "08e756e6-8253-4c9e-813f-9b67e0eea839",
+      "name": "send_results",
+      "webhookId": "87787cf4-945f-412e-b083-aaeff8681dc2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw",
+          "mode": "list",
+          "cachedResultName": "Solicitud de encargo de camisetas (respuestas)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 954236048,
+          "mode": "list",
+          "cachedResultName": "Respuestas de formulario 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw/edit#gid=954236048"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "e43aaa73-9336-4d8a-9c70-2fda1ac870a7",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "i3Jfpoa9NFh4S4rz",
+          "name": "google_sheets_trigger_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Extraer datos\nSe obtiene la información de las solicitudes o nuevas órdenes del formulario",
+        "height": 272,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        624,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "a6c0533c-695a-4fab-991c-64d0071d1ab4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Filtrar datos\nSe filtran los datos que tienen un correo electrónico relacionado y no están verificados",
+        "height": 304,
+        "width": 224,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        848,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "f64813c5-631c-4bbd-bba7-2162e09f49cb",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Envío de resultados\nSe envía por correo electrónico las actualizaciones realizadas",
+        "height": 272,
+        "width": 336,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "19efd788-ec07-48a2-a23e-9b6858fc99cf",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "37b4611e-1fdd-4ebc-ac98-793a00d264ec",
+              "leftValue": "={{ $json[\"Dirección de correo electrónico\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "10e72336-ff27-49db-b181-7fb1fbb065a2",
+              "leftValue": "={{ $json[\"Fecha verificación\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        912,
+        -16
+      ],
+      "id": "3f6d6e1b-9892-4b09-a62f-126de34255f0",
+      "name": "filter_records_without_email"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1136,
+        -16
+      ],
+      "id": "a6211d50-72d3-42ac-844c-3c6fe92ffbee",
+      "name": "loop_new_requests"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "end_loop",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        -16
+      ],
+      "id": "a2f0159f-6dac-48f8-a3e5-afe654dcad9e"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM inventory WHERE size = '{{ $json[\"Talla de camiseta\"].substring(0,4).replaceAll('-', '') }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1392,
+        0
+      ],
+      "id": "8c18816f-675b-4ea4-8d9f-a62f6bfa326c",
+      "name": "get_inventory_by_size",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "eD1yJOAiWawH65wC",
+          "name": "postgres_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0ed3a158-c6d8-4326-ae2f-e9a9018770b4",
+              "leftValue": "={{ $json.in_stock }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "adf539ce-76f6-45c0-bca7-646dfa8828ba",
+              "leftValue": "={{ $json.in_stock }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        0
+      ],
+      "id": "4b3f6cb2-3ab3-4ac3-847f-93508c8fbf4f",
+      "name": "validate_stock"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d79b0861-ab25-492e-a721-87cfcf0d76ed",
+              "name": "in_stock",
+              "value": "={{ $json.in_stock - 1 ?? 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "87069407-7ed5-4752-ba0b-b1a3f8107610",
+              "name": "size",
+              "value": "={{ $json.size }}",
+              "type": "string"
+            },
+            {
+              "id": "5683d0b3-bac0-47a2-af39-e4c48053abe2",
+              "name": "product_name",
+              "value": "={{ $json.product_name }}",
+              "type": "string"
+            },
+            {
+              "id": "231ba1e8-0d6a-4f58-a470-d485846e1b65",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1792,
+        -16
+      ],
+      "id": "cac3dae2-e07c-4957-9b08-d9d7814417fd",
+      "name": "substract_inventory"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "inventory",
+          "mode": "list",
+          "cachedResultName": "inventory"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "in_stock": "={{ $json.in_stock }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "product_name",
+              "displayName": "product_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "size",
+              "displayName": "size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "in_stock",
+              "displayName": "in_stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1984,
+        -16
+      ],
+      "id": "6b457fe4-e340-4052-bf96-277ddfa7649e",
+      "name": "update_stock",
+      "credentials": {
+        "postgres": {
+          "id": "eD1yJOAiWawH65wC",
+          "name": "postgres_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw",
+          "mode": "list",
+          "cachedResultName": "Solicitud de encargo de camisetas (respuestas)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 954236048,
+          "mode": "list",
+          "cachedResultName": "Respuestas de formulario 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw/edit#gid=954236048"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Dirección de correo electrónico": "={{ $('filter_records_without_email').item.json[\"Dirección de correo electrónico\"] }}",
+            "Verificado": "={{ true }}",
+            "Fecha verificación": "={{ $now.format('yyyy-MM-dd HH:MM') }}"
+          },
+          "matchingColumns": [
+            "Dirección de correo electrónico"
+          ],
+          "schema": [
+            {
+              "id": "Marca temporal",
+              "displayName": "Marca temporal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Talla de camiseta",
+              "displayName": "Talla de camiseta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Otros comentarios",
+              "displayName": "Otros comentarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dirección de correo electrónico",
+              "displayName": "Dirección de correo electrónico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Verificado",
+              "displayName": "Verificado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha verificación",
+              "displayName": "Fecha verificación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2176,
+        -16
+      ],
+      "id": "4e366a0c-6fe1-41c3-a130-a36e5a08d499",
+      "name": "mark_order_as_verified",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7i9C4vyUg4Ttv1Oi",
+          "name": "google_sheets_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        -288
+      ],
+      "id": "cca3026f-24f5-4cbc-a775-b582eeaa4db1",
+      "name": "group_results"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw",
+          "mode": "list",
+          "cachedResultName": "Solicitud de encargo de camisetas (respuestas)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 954236048,
+          "mode": "list",
+          "cachedResultName": "Respuestas de formulario 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_P8B6grn9g98IgwlAoqlwsq4VacI9wMvWiFIBnUnZBw/edit#gid=954236048"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Dirección de correo electrónico": "={{ $('filter_records_without_email').item.json[\"Dirección de correo electrónico\"] }}",
+            "Verificado": "={{ false }}",
+            "Fecha verificación": "={{ $now.format('yyyy-MM-dd HH:MM') }}"
+          },
+          "matchingColumns": [
+            "Dirección de correo electrónico"
+          ],
+          "schema": [
+            {
+              "id": "Marca temporal",
+              "displayName": "Marca temporal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Talla de camiseta",
+              "displayName": "Talla de camiseta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Otros comentarios",
+              "displayName": "Otros comentarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dirección de correo electrónico",
+              "displayName": "Dirección de correo electrónico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Verificado",
+              "displayName": "Verificado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha verificación",
+              "displayName": "Fecha verificación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1792,
+        192
+      ],
+      "id": "fcdc7e44-04d7-476c-a30f-e8f91202de5f",
+      "name": "mark_order_as_not_verified",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7i9C4vyUg4Ttv1Oi",
+          "name": "google_sheets_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Obtener inventario\nSe obtiene el inventario y validación de los productos disponibles",
+        "height": 272,
+        "width": 384,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "3f83d438-89ec-421b-849d-ac4a391d712f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Actualización de información\nSe actualiza en base de datos la cantidad de productos disponibles asi como la marca de verificado o no una orden",
+        "height": 496,
+        "width": 608,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1728,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "3f3e96b0-93cc-465b-b027-0e661c46cac8",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "filter_records_without_email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter_records_without_email": {
+      "main": [
+        [
+          {
+            "node": "loop_new_requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loop_new_requests": {
+      "main": [
+        [
+          {
+            "node": "group_results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "get_inventory_by_size",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "end_loop": {
+      "main": [
+        [
+          {
+            "node": "loop_new_requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_inventory_by_size": {
+      "main": [
+        [
+          {
+            "node": "validate_stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validate_stock": {
+      "main": [
+        [
+          {
+            "node": "substract_inventory",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "mark_order_as_not_verified",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "substract_inventory": {
+      "main": [
+        [
+          {
+            "node": "update_stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_stock": {
+      "main": [
+        [
+          {
+            "node": "mark_order_as_verified",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_order_as_verified": {
+      "main": [
+        [
+          {
+            "node": "end_loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "group_results": {
+      "main": [
+        [
+          {
+            "node": "send_results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_order_as_not_verified": {
+      "main": [
+        [
+          {
+            "node": "loop_new_requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "76c97506-a17e-4fcd-8a61-b13ddffab21c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30283f17854909b1f178ebc281f74453ff6070225c5dc94192ecdf325754b502"
+  },
+  "id": "MD1k7ioRSyBnojt6",
+  "tags": []
+}
