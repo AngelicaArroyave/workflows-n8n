@@ -1,0 +1,987 @@
+{
+  "name": "Days Off - Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"full_name\": \"{{ $json.data.full_name }}\",\n  \"email\": \"{{ $json.data.email }}\",\n  \"start_date\": \"{{ $json.data.start_date }}\",\n  \"end_date\": \"{{ $json.data.end_date }}\",\n  \"comments\": \"{{ $json.data.comments }}\",\n  \"days_requested\": {{ ($json.data.end_date.toDateTime() - $json.data.start_date.toDateTime()) / (1000 * 60 * 60 * 24) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        64
+      ],
+      "id": "884d10f2-5ff3-404a-882c-d94ccac8c7ba",
+      "name": "extract_request_variables"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "611a84b6-d7db-47c5-acba-9bca2cf3c1d0",
+              "leftValue": "={{ $now }}",
+              "rightValue": "={{ $json.start_date.toDateTime().minus(7, 'days') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "afterOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        64
+      ],
+      "id": "44bb1efa-466e-414c-bd0f-007c7bb425ab",
+      "name": "date_is_greater_than_7_days"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('extract_request_variables').item.json.email }}",
+        "subject": "Rechazo de solicitud",
+        "message": "=<h1>Solicitud de reenvio de información</h1>\n\n<p>Buen día, reciba un cordial saludo.</p>\n<br>\n<p>Se notifica que de acuerdo a la solicitud realizada el día {{ $('days_off_form').item.json.submittedAt }}: {{ $json.message }}.</p>\n<br>\n<p>Cordialmente: RRHH</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        176
+      ],
+      "id": "8db59446-a600-4697-aa85-0bab386fcd77",
+      "name": "send_rejection_message",
+      "webhookId": "82137d10-fc2a-464f-9b7d-9b3c43acaae5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"ok\": false,\n  \"message\": \"Se debe de solicitar con 7 días de antelación\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        176
+      ],
+      "id": "a4a86504-13c7-4c6c-8c0e-36eb0d053181",
+      "name": "request-time_error"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"ok\": false,\n  \"message\": \"Revise nuevamente las fechas si están correctas, ya que se solicita como fecha de inicio: {{ $json.start_date }} y fecha de retorno: {{ $json.end_date }}, por lo que se debe de solicitar más de 1 día de permiso\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        176
+      ],
+      "id": "7349b23c-9fef-4993-bcc0-1edd59adfd8b",
+      "name": "error_in_days_requested"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "db350559-1513-4281-a3ea-9f44eb924008",
+              "leftValue": "={{ $json.days_requested }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "fee684a5-678b-4466-8f79-e97cb102211e",
+      "name": "correct_dates"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "days_off",
+          "mode": "list",
+          "cachedResultName": "days_off"
+        },
+        "limit": 1,
+        "where": {
+          "values": [
+            {
+              "column": "email",
+              "value": "={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        816,
+        -192
+      ],
+      "id": "02f36d5e-c2b2-478d-af1b-446c0893bf20",
+      "name": "get_days_off",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "eD1yJOAiWawH65wC",
+          "name": "postgres_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3f5bd6a7-93d4-4772-9861-ce78d63d8d29",
+              "leftValue": "={{ $('extract_request_variables').item.json.days_requested }}",
+              "rightValue": "={{ $json.vacation_days }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1008,
+        -192
+      ],
+      "id": "6f44755d-5eca-45b5-b4cb-90320eb0f1c0",
+      "name": "enough_days"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"ok\": false,\n  \"message\": \"No tiene suficinte tiempo libre, cuenta con: {{ $json.vacation_days }} días\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1056,
+        176
+      ],
+      "id": "d58d43ef-d05a-4613-9e09-687e1983fc72",
+      "name": "error_does_not_have_enough_days"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=## Solicitud nueva\nEmpleado: {{ $('extract_request_variables').item.json.full_name }}\nCorreo electrónico: {{ $('extract_request_variables').item.json.email }}\n\nSolicita un permiso para vacaciones en:\n\nFecha de inicio: {{ $('extract_request_variables').item.json.start_date }}\nFecha de regreso: {{ $('extract_request_variables').item.json.end_date }}\n\n### Comentarios\nCon los siguientes comentarios adicionales: {{ $('extract_request_variables').item.json.comments }}\n\n## Aprobar o rechazar solicitud\nPara continuar [click aquí]({{ $execution.resumeUrl }})",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        -208
+      ],
+      "id": "0f4ee7f4-1076-4556-9f4a-5806ef9ca44c",
+      "name": "send_message_to_RRHH",
+      "webhookId": "4ab7f01b-9160-4d2a-a8ad-8440e4f7ea26",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "jqyxeYEAOfE8biPh",
+          "name": "discord_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "incomingAuthentication": "headerAuth",
+        "httpMethod": "POST",
+        "limitWaitTime": true,
+        "resumeAmount": 2,
+        "resumeUnit": "days",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        -208
+      ],
+      "id": "3538dcb7-64af-4f4a-9842-009e8a8b7129",
+      "name": "wait_response_RRHH",
+      "webhookId": "9ea68afe-c497-4949-af6b-d93e7e7174d9",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QzNpnT1sPsOMDbs7",
+          "name": "header_auth_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3f5bd6a7-93d4-4772-9861-ce78d63d8d29",
+              "leftValue": "={{ $json.body.approve }}",
+              "rightValue": "=Aprobar",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1632,
+        -208
+      ],
+      "id": "8ef1aa3d-eef6-409e-9833-f21e13093feb",
+      "name": "validate_request_status"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"ok\": false,\n  \"message\": \"{{ $json.body.message || 'No hay mensaje de RRHH' }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        -48
+      ],
+      "id": "2430ed03-b7e3-4d4b-809a-5e250aad0578",
+      "name": "error_request_denied"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('extract_request_variables').item.json.email }}",
+        "subject": "Rechazo de solicitud",
+        "message": "=<h1>RRHH ha rehazado su solicitud</h1>\n\n<p>Buen día, reciba un cordial saludo.</p>\n<br>\n<p>Se notifica que de acuerdo a la solicitud realizada ha sido rechazada debido a que: {{ $json.message }}.</p>\n<br>\n<p>Cordialmente: RRHH</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2064,
+        -48
+      ],
+      "id": "8b7036c0-86fc-4188-8d94-edc33459e428",
+      "name": "send_request_denied",
+      "webhookId": "77949154-64ec-4181-9110-562f1f844c1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "f2359e56c45c2d21ea02458bc7072b1a4151d6b490b5405087b22aa0963e8f28@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "start": "={{ $('extract_request_variables').item.json.start_date }}",
+        "end": "={{ $('extract_request_variables').item.json.end_date }}",
+        "additionalFields": {
+          "summary": "=Vacaciones de {{ $('extract_request_variables').item.json.full_name }}\n\nTiempo solicitado: {{ $('extract_request_variables').item.json.days_requested }} días"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1840,
+        -368
+      ],
+      "id": "ee9595fa-65a3-4196-ab88-ab31ccda1cee",
+      "name": "create_event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "pkfNtCaBUVxdqF4r",
+          "name": "google_calendar_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "days_off",
+          "mode": "list",
+          "cachedResultName": "days_off"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('get_days_off').item.json.id }}",
+            "vacation_days": "={{ $('get_days_off').item.json.vacation_days - $('extract_request_variables').item.json.days_requested }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "vacation_days",
+              "displayName": "vacation_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sick_days",
+              "displayName": "sick_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2032,
+        -368
+      ],
+      "id": "9671d160-cdbf-4991-bf68-48b78f596e1a",
+      "name": "substract_days_off",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "eD1yJOAiWawH65wC",
+          "name": "postgres_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('extract_request_variables').item.json.email }}",
+        "subject": "Aprobación de solicitud",
+        "message": "=<h1>RRHH ha aprobado su solicitud</h1>\n\n<p>Buen día, reciba un cordial saludo.</p>\n<br>\n<p>Se notifica que de acuerdo a la solicitud realizada ha sido aprobada con fecha de inicio {{ $('extract_request_variables').item.json.start_date }} y fecha de regreso {{ $('extract_request_variables').item.json.end_date }}.</p>\n<br>\n<p>Cordialmente: RRHH</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        -368
+      ],
+      "id": "7778f392-244f-49e6-a69d-548a33e65bfa",
+      "name": "send_request_approved",
+      "webhookId": "d0d60878-2076-4118-968f-08f6ec95edac",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Validar fechas\nSe valida si la fehca de inicio es mayor a 7 días",
+        "height": 272,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "6b3c3b01-0474-43ac-8cfd-953cbace4112",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Validar fechas si son correctas\nSe valida si las fechas ingresadas, tanto la de inicio como de regreso son correctas",
+        "height": 384,
+        "width": 352,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        -336
+      ],
+      "typeVersion": 1,
+      "id": "9749cfa9-23ab-4149-ac48-18794cf262f4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Validar si tiene dias disponibles\nSe valida en los registros si tiene días disponibles para pedir vacaciones",
+        "height": 336,
+        "width": 192,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        960,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "162164a2-845f-417b-9b6e-455e71a5d950",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Validación RRHH\nSe espera una validación por parte del equipo de recursos humanos para aprobar o no la solicitud",
+        "height": 272,
+        "width": 624,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1168,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "33a6f490-1313-4e97-99de-c4b14a3a9242",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Aprobación de solicitud\nSi la solicitud fue aprobada, se crea un evento en el calendario visible para la empresa y se notifica al empleado",
+        "height": 272,
+        "width": 624,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1808,
+        -480
+      ],
+      "typeVersion": 1,
+      "id": "30cff4e8-1538-4250-acf1-e9a01ca1017d",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Notificación de errres en la solicitud\nSe envía correo electrónico notificando algún error en el proceso de revisión de la solicitud",
+        "height": 272,
+        "width": 896,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "a1bb3bd7-3037-414d-83e7-73b97186e340",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Notificación de rechazo de la solicitud\nSe envía correo electrónico notificando el rechazo de la solicitud y el motivo",
+        "height": 304,
+        "width": 448,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1808,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "af1051b3-9139-4892-adc9-308bb2632498",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vacation/ask/form",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -624,
+        160
+      ],
+      "id": "f5e32f7c-121b-4cc3-bc41-060e83a7058c",
+      "name": "webhook_request_days_off",
+      "webhookId": "ca7c8982-73ae-450d-91fe-b1510a914fa8",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QzNpnT1sPsOMDbs7",
+          "name": "header_auth_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Espera un body como:\n// {\n//   \"Nombre completo\": \"Fernando Herrera\",\n//   \"Correo electrónico\": \"fernando.devtalles@gmail.com\",\n//   \"Fecha de inicio\": \"2025-08-19\",\n//   \"Fecha de retorno\": \"2025-08-23\",\n//   \"Comentarios\": \"Nada en especial\"\n// }\n\nconst src = $input.first().json.body;\nconst errors = [];\n\n// Helpers\nconst getStr = (v) => (v ?? '').toString().trim();\nconst isEmail = (v) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(v);\nconst ISO_DATE_RE = /^\\d{4}-\\d{2}-\\d{2}$/;\nconst parseISODate = (s) => new Date(`${s}T00:00:00Z`); // avoid server TZ issues\n\n// Extract and normalize\nconst fullName     = getStr(src['Nombre completo']);\nconst email        = getStr(src['Correo electrónico']).toLowerCase();\nconst startDateStr = getStr(src['Fecha inicio']);\nconst endDateStr   = getStr(src['Fecha de retorno']);\nconst comments     = getStr(src['Comentarios']);\n\n// Validations\nif (!fullName) errors.push('Nombre completo es requerido.');\nif (!email) errors.push('Correo electrónico es requerido.');\nelse if (!isEmail(email)) errors.push('Correo electrónico inválido.');\n\nif (!startDateStr) errors.push('Fecha de inicio es requerida.');\nelse if (!ISO_DATE_RE.test(startDateStr))\n  errors.push('Fecha de inicio debe tener formato YYYY-MM-DD.');\n\nif (!endDateStr) errors.push('Fecha de retorno es requerida.');\nelse if (!ISO_DATE_RE.test(endDateStr))\n  errors.push('Fecha de retorno debe tener formato YYYY-MM-DD.');\n\n// Date comparison (only if format is valid)\nif (ISO_DATE_RE.test(startDateStr) && ISO_DATE_RE.test(endDateStr)) {\n  const startDate = parseISODate(startDateStr);\n  const endDate   = parseISODate(endDateStr);\n\n  if (Number.isNaN(startDate.valueOf())) errors.push('Fecha de inicio no es válida.');\n  if (Number.isNaN(endDate.valueOf())) errors.push('Fecha de retorno no es válida.');\n\n  // Must be strictly before\n  if (!Number.isNaN(startDate.valueOf()) && !Number.isNaN(endDate.valueOf()) && !(startDate < endDate)) {\n    errors.push('La fecha de inicio debe ser ANTES que la fecha de retorno.');\n  }\n}\n\n// Optional comments\nif (comments && comments.length > 500) {\n  errors.push('Comentarios no debe superar 500 caracteres.');\n}\n\n// Response for chaining with Webhook Response\nif (errors.length) {\n  return [\n    {\n      valid: false,\n      status: 400,\n      errors,\n    },\n  ];\n}\n\nreturn [\n  {\n    valid: true,\n    status: 200,\n    data: {\n      full_name: fullName,\n      email,\n      start_date: startDateStr,\n      end_date: endDateStr,\n      comments\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        160
+      ],
+      "id": "01904edd-0658-4701-b5a9-744918c977e6",
+      "name": "validate_webhook_data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "39c88cea-d5b8-4e4f-980e-3577bf298967",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -208,
+        160
+      ],
+      "id": "9991297a-745e-4d31-80b9-8d3ed87eea97",
+      "name": "validate_errors"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        16,
+        64
+      ],
+      "id": "87cda9df-c21a-43b9-b08a-45c5afdab6be",
+      "name": "correct_information"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        16,
+        272
+      ],
+      "id": "df8856c4-2b01-4660-ad7e-0fd52651e6ca",
+      "name": "incorrect_information"
+    }
+  ],
+  "pinData": {
+    "wait_response_RRHH": [
+      {
+        "json": {
+          "headers": {
+            "x-authorization": "64c6eee8669c90aa418fece5712f9ea1",
+            "content-type": "application/json",
+            "user-agent": "PostmanRuntime/7.51.0",
+            "accept": "*/*",
+            "postman-token": "25cf5bde-c7ad-45e4-b102-f53f3fe3a640",
+            "host": "localhost:5678",
+            "accept-encoding": "gzip, deflate, br",
+            "connection": "keep-alive",
+            "content-length": "116"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "approve": true,
+            "message": ""
+          },
+          "webhookUrl": "http://localhost:5678/webhook-test/9ea68afe-c497-4949-af6b-d93e7e7174d9",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "extract_request_variables": {
+      "main": [
+        [
+          {
+            "node": "date_is_greater_than_7_days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "date_is_greater_than_7_days": {
+      "main": [
+        [
+          {
+            "node": "correct_dates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "request-time_error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request-time_error": {
+      "main": [
+        [
+          {
+            "node": "send_rejection_message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "error_in_days_requested": {
+      "main": [
+        [
+          {
+            "node": "send_rejection_message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "correct_dates": {
+      "main": [
+        [
+          {
+            "node": "get_days_off",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "error_in_days_requested",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_days_off": {
+      "main": [
+        [
+          {
+            "node": "enough_days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enough_days": {
+      "main": [
+        [
+          {
+            "node": "send_message_to_RRHH",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "error_does_not_have_enough_days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "error_does_not_have_enough_days": {
+      "main": [
+        [
+          {
+            "node": "send_rejection_message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_message_to_RRHH": {
+      "main": [
+        [
+          {
+            "node": "wait_response_RRHH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wait_response_RRHH": {
+      "main": [
+        [
+          {
+            "node": "validate_request_status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validate_request_status": {
+      "main": [
+        [
+          {
+            "node": "create_event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "error_request_denied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "error_request_denied": {
+      "main": [
+        [
+          {
+            "node": "send_request_denied",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_event": {
+      "main": [
+        [
+          {
+            "node": "substract_days_off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "substract_days_off": {
+      "main": [
+        [
+          {
+            "node": "send_request_approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "webhook_request_days_off": {
+      "main": [
+        [
+          {
+            "node": "validate_webhook_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validate_webhook_data": {
+      "main": [
+        [
+          {
+            "node": "validate_errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validate_errors": {
+      "main": [
+        [
+          {
+            "node": "correct_information",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "incorrect_information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "correct_information": {
+      "main": [
+        [
+          {
+            "node": "extract_request_variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7a1170da-dc64-4236-83e2-c66f53f5b9db",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30283f17854909b1f178ebc281f74453ff6070225c5dc94192ecdf325754b502"
+  },
+  "id": "ydL3ej2Ll7zifU8q",
+  "tags": [
+    {
+      "updatedAt": "2026-02-18T00:27:59.784Z",
+      "createdAt": "2026-02-18T00:27:59.784Z",
+      "id": "SXZkl2nzNIovP4WG",
+      "name": "days_off"
+    }
+  ]
+}

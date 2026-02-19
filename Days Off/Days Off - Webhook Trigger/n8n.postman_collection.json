@@ -1,0 +1,82 @@
+{
+	"info": {
+		"_postman_id": "72b5374e-3599-42e7-9f2c-15ec71f77a31",
+		"name": "n8n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28964853"
+	},
+	"item": [
+		{
+			"name": "vacation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-authorization",
+						"value": "64c6eee8669c90aa418fece5712f9ea1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Nombre completo\": \"Angelica Arroyave Duque\",\r\n    \"Correo electrónico\": \"aarroyaveduque20@gmail.com\",\r\n    \"Fecha inicio\": \"2026-02-23\",\r\n    \"Fecha de retorno\": \"2026-02-28\",\r\n    \"Comentarios\": \"Ningún comentario para agregar\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5678/webhook-test/vacation/ask/form",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5678",
+					"path": [
+						"webhook-test",
+						"vacation",
+						"ask",
+						"form"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "vacation_waiting",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-authorization",
+						"value": "64c6eee8669c90aa418fece5712f9ea1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"approve\": false,\r\n    \"message\": \"No puedes tomar vacaciones ya que orta persona las ha solicitado antes\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5678/webhook-waiting/171",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5678",
+					"path": [
+						"webhook-waiting",
+						"171"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
