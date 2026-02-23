@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css">
+    <title>Wiki Chat</title>
+</head>
+
+<body>
+    <h1>Wiki Chatbot</h1>
+
+    <script type="module">
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+        createChat({
+            webhookUrl: 'http://localhost:5678/webhook/9b5c8975-5186-4c93-b0dd-799b1e2b536d/chat',
+            initialMessages: [
+                'Hola!, ¿qué tal? 👋',
+                'Mi nombre es Jarvis. Soy un asistente de Wikipedia, ¿en qué te puedo ayudar?'
+            ],
+            i18n: {
+                en: {
+                    title: 'Hola! 👋',
+                    subtitle: "Inicie un chat. Estamos aquí para ayudarle las 24/7.",
+                    footer: '',
+                    getStarted: 'New Conversation',
+                    inputPlaceholder: 'Escribe tu pregunta..',
+                },
+            },
+        });
+    </script>
+</body>
+
+</html>

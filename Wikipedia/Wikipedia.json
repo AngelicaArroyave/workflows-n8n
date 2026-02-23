@@ -1,0 +1,156 @@
+{
+  "name": "Wikipedia",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hola!, ¿qué tal? 👋\nMi nombre es Jarvis. Soy un asistente de Wikipedia, ¿en qué te puedo ayudar?",
+        "options": {
+          "subtitle": "Inicie un chat. Estamos aquí para ayudarle las 24/7.",
+          "title": "Hola! 👋",
+          "customCss": ":root {\n  /* =========================\n     PALETA BASE (DARK + PURPLE)\n     ========================= */\n  --chat--color-primary: #7c3aed; /* Morado principal */\n  --chat--color-primary-shade-50: #6d28d9;\n  --chat--color-primary-shade-100: #5b21b6;\n\n  --chat--color-secondary: #a78bfa; /* Morado claro */\n  --chat--color-white: #f8fafc;\n\n  --chat--color-dark: #0b0f1a; /* Fondo principal profundo */\n  --chat--color-light: #1c1f2b; /* Superficie secundaria */\n  --chat--color-light-shade-50: #262a3b;\n  --chat--color-light-shade-100: #2f3347;\n\n  --chat--color-medium: #9ca3af;\n  --chat--color-disabled: #6b7280;\n  --chat--color-typing: #312e81;\n\n  /* =========================\n     FONDO GENERAL\n     ========================= */\n  --chat--body--background: #0b0f1a; /* Fondo más oscuro */\n\n  /* =========================\n     HEADER (más contraste)\n     ========================= */\n  --chat--header--background: #141826; /* Más claro que el body */\n  --chat--header--color: #a78bfa; /* Morado claro visible */\n\n  /* =========================\n     MENSAJES\n     ========================= */\n  --chat--message--bot--background: #1c1f2b;\n  --chat--message--bot--color: #e5e7eb;\n\n  --chat--message--user--background: #7c3aed; /* Morado principal */\n  --chat--message--user--color: #ffffff;\n\n  --chat--message--pre--background: #111322;\n\n  /* =========================\n     INPUT AREA\n     ========================= */\n  --chat--input--background: #141826;\n  --chat--input--text-color: #f8fafc;\n  --chat--input--border-active: 1px solid #7c3aed;\n\n  /* =========================\n     FOOTER\n     ========================= */\n  --chat--footer--background: #10131f;\n  --chat--footer--color: #9ca3af;\n\n  /* =========================\n     BOTÓN ENVIAR (mejorado)\n     ========================= */\n  --chat--input--send--button--background: #7c3aed;\n  --chat--input--send--button--color: #ffffff;\n  --chat--input--send--button--background-hover: #6d28d9;\n  --chat--input--send--button--color-hover: #ffffff;\n\n  /* =========================\n     TOGGLE BUTTON\n     ========================= */\n  --chat--toggle--background: #7c3aed;\n  --chat--toggle--hover--background: #6d28d9;\n  --chat--toggle--active--background: #5b21b6;\n  --chat--toggle--color: #ffffff;\n}\n\n/* Ajuste visual mensajes */\n.chat-message {\n  max-width: 55%;\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "edfd7238-ad47-49aa-9e63-a2d0d9d7233d",
+      "name": "get_message",
+      "webhookId": "0361db4a-f0b5-41f7-bb66-1224c6504c23"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        176
+      ],
+      "id": "e7428cde-ba7f-4802-9f43-92cf29df5646",
+      "name": "memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        416,
+        176
+      ],
+      "id": "0ca40642-7843-4d03-a9e9-e342ec95d39d",
+      "name": "wikipedia"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        160,
+        176
+      ],
+      "id": "bc73442d-c457-4945-94f0-4f3a92984080",
+      "name": "gemini_chat_model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WMTYq7E6cdOTHuwG",
+          "name": "google_gemini_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Objetivo\nEres un asistente amable, tu nombre es Jarvis, ayudas a buscar informar información en Wikipedia.\n\n## Reglas\n- Regresa siempre respuestas de dos parráfos o menos.\n- Siempre coloca las referencias de los artículos que consultas de Wikipedia.\n\n## Tools\nTienes una \"tool\" para conectarte a Wikipedia y traer información, puedes usarla para confirmar información."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "843f48d8-eb5b-4cf9-afab-60a5309df6eb",
+      "name": "agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "get_message": {
+      "main": [
+        [
+          {
+            "node": "agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini_chat_model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "777c3f97-36f8-4b34-86ce-3a363b558a05",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30283f17854909b1f178ebc281f74453ff6070225c5dc94192ecdf325754b502"
+  },
+  "id": "u9rhHl1EpoAU1vqhx4DpD",
+  "tags": [
+    {
+      "updatedAt": "2026-02-23T00:22:17.571Z",
+      "createdAt": "2026-02-23T00:22:17.571Z",
+      "id": "bGh7mL9UNDHRasgf",
+      "name": "IA"
+    },
+    {
+      "updatedAt": "2026-02-23T00:22:13.269Z",
+      "createdAt": "2026-02-23T00:22:13.269Z",
+      "id": "tShid93BZZ24ayPv",
+      "name": "agents"
+    }
+  ]
+}

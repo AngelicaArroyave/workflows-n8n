@@ -1,0 +1,84 @@
+:root {
+    /* =========================
+     PALETA BASE (DARK + PURPLE)
+     ========================= */
+    --chat--color-primary: #7c3aed;
+    /* Morado principal */
+    --chat--color-primary-shade-50: #6d28d9;
+    --chat--color-primary-shade-100: #5b21b6;
+
+    --chat--color-secondary: #a78bfa;
+    /* Morado claro */
+    --chat--color-white: #f8fafc;
+
+    --chat--color-dark: #0b0f1a;
+    /* Fondo principal profundo */
+    --chat--color-light: #1c1f2b;
+    /* Superficie secundaria */
+    --chat--color-light-shade-50: #262a3b;
+    --chat--color-light-shade-100: #2f3347;
+
+    --chat--color-medium: #9ca3af;
+    --chat--color-disabled: #6b7280;
+    --chat--color-typing: #312e81;
+
+    /* =========================
+     FONDO GENERAL
+     ========================= */
+    --chat--body--background: #0b0f1a;
+    /* Fondo más oscuro */
+
+    /* =========================
+     HEADER (más contraste)
+     ========================= */
+    --chat--header--background: #141826;
+    /* Más claro que el body */
+    --chat--header--color: #a78bfa;
+    /* Morado claro visible */
+
+    /* =========================
+     MENSAJES
+     ========================= */
+    --chat--message--bot--background: #1c1f2b;
+    --chat--message--bot--color: #e5e7eb;
+
+    --chat--message--user--background: #7c3aed;
+    /* Morado principal */
+    --chat--message--user--color: #ffffff;
+
+    --chat--message--pre--background: #111322;
+
+    /* =========================
+     INPUT AREA
+     ========================= */
+    --chat--input--background: #141826;
+    --chat--input--text-color: #f8fafc;
+    --chat--input--border-active: 1px solid #7c3aed;
+
+    /* =========================
+     FOOTER
+     ========================= */
+    --chat--footer--background: #10131f;
+    --chat--footer--color: #9ca3af;
+
+    /* =========================
+     BOTÓN ENVIAR (mejorado)
+     ========================= */
+    --chat--input--send--button--background: #7c3aed;
+    --chat--input--send--button--color: #ffffff;
+    --chat--input--send--button--background-hover: #6d28d9;
+    --chat--input--send--button--color-hover: #ffffff;
+
+    /* =========================
+     TOGGLE BUTTON
+     ========================= */
+    --chat--toggle--background: #7c3aed;
+    --chat--toggle--hover--background: #6d28d9;
+    --chat--toggle--active--background: #5b21b6;
+    --chat--toggle--color: #ffffff;
+}
+
+/* Ajuste visual mensajes */
+.chat-message {
+    max-width: 55%;
+}
