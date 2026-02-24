@@ -1,0 +1,414 @@
+{
+  "name": "Personal assitant",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "9c70c05b-b858-4216-900f-9a020135600d",
+      "name": "get_message",
+      "webhookId": "8d4ba49c-6c03-4ed3-b86f-eb20a9ad6020"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Descripción\n- Eres un asistente de AI que administra correos electrónicos y calendario de forma eficiente.\n- Tus respuestas deben ser cortas, claras y directas.\n- Prioriza siempre la organización y productividad.\n\n# Reglas de calendario\n- Horario laboral: 8am a 4pm (Lunes a Viernes).\n- No agendar fuera del horario laboral ni en fines de semana.\n- No permitir traslapes: verificar disponibilidad antes de agendar.\n- Confirmar siempre antes de crear, modificar o cancelar eventos.\n- Enviar recordatorios 15 minutos antes de cada evento.\n- Resumir eventos diarios al inicio del día y semanales los lunes a primera hora.\n\n# Reglas de correo electrónico\n- Lectura: siempre en texto plano, sin HTML.\n- Antes de enviar un correo, siempre crear un borrador (en formato HTML) y regresalo para confirmar antes de enviarlo.\n- Envío: crear una estructura para que siempre se envíe en formato HTML, con negrilla, títulos y un formato apropiado.\n- Clasificación: agrupar por prioridad (Alta > Media > Baja).\n- Ignorar: correos promocionales, spam y notificaciones irrelevantes.\n- Resumir correos importantes al inicio del día.\n- Confirmar siempre antes de eliminar o archivar correos.\n- Proponer respuestas rápidas para correos de alta prioridad.\n- No coloques \"[Tu Nombre]\", siempre pon \"Angelica Arroyave\" en su lugar.\n\n# Herramientas - Tools\n- Acceso al calendario: crear, modificar, cancelar eventos, obtener eventos.\n- Acceso al correo: leer, redactar, clasificar y enviar correos.\n- Puede integrarse con listas de tareas y recordatorios para mejorar la productividad.\n\n# La fecha actual es:\n{{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "5b6cfc72-5bfe-4492-98cf-f1c253eeb459",
+      "name": "agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        256,
+        224
+      ],
+      "id": "41051152-7bde-4749-b60d-77cb79653337",
+      "name": "gemini_chat_model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WMTYq7E6cdOTHuwG",
+          "name": "google_gemini_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        224
+      ],
+      "id": "9c24ab6a-68c7-4480-8486-3549b62469fb",
+      "name": "memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        176
+      ],
+      "id": "9c3af5b8-6ade-43e5-b515-07d7ddd09a26",
+      "name": "send_email",
+      "webhookId": "61d0dfc6-6449-49a9-82e7-9773f95c8453",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "html",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        16
+      ],
+      "id": "703af781-509e-42c1-a757-f542b030f501",
+      "name": "draft_email",
+      "webhookId": "e97e4d22-1235-47b7-a0cd-0c9bff528eed",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 5,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        -144
+      ],
+      "id": "dd1889b9-b84b-4c78-873a-ce47de80b110",
+      "name": "get_messages_gmail",
+      "webhookId": "6bddc719-0e87-46a9-a682-aeb6ea20a500",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "f2359e56c45c2d21ea02458bc7072b1a4151d6b490b5405087b22aa0963e8f28@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1152,
+        128
+      ],
+      "id": "61987e43-4f42-4a3b-951a-e590b18363cd",
+      "name": "create_event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "pkfNtCaBUVxdqF4r",
+          "name": "google_calendar_credentials"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "f2359e56c45c2d21ea02458bc7072b1a4151d6b490b5405087b22aa0963e8f28@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "limit": 5,
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1152,
+        -16
+      ],
+      "id": "65345e0c-376c-4df0-b61a-c553dd5ebe9f",
+      "name": "get_events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "pkfNtCaBUVxdqF4r",
+          "name": "google_calendar_credentials"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "description": "Ofrece información sobre Pokémons",
+        "workflowId": {
+          "__rl": true,
+          "value": "-U3ui92l9wLpApW0lNokY",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/-U3ui92l9wLpApW0lNokY",
+          "cachedResultName": "Pokemon Finder Tool"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "name"
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        224
+      ],
+      "id": "73e23f8c-f955-4968-9723-350f3e5cba94",
+      "name": "get_pokemon_information"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://localhost:5678/mcp/afbec4c2-f08b-4dae-b517-bdf4ed2d6efe",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        224
+      ],
+      "id": "b3f3d66e-02b8-459e-9363-7dcb16126925",
+      "name": "mcp_gmail_client",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LIcoIynVRQJ5OJxM",
+          "name": "mcp_header_auth_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://localhost:5678/mcp/966c76dc-81db-4614-898b-a614959e37be",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        224
+      ],
+      "id": "3fa4f1ee-f773-4d74-b3f9-b00b1e758b50",
+      "name": "mcp_calendar_client",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LIcoIynVRQJ5OJxM",
+          "name": "mcp_header_auth_credentials"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "get_message": {
+      "main": [
+        [
+          {
+            "node": "agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini_chat_model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "draft_email": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "get_messages_gmail": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "create_event": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "get_events": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "get_pokemon_information": {
+      "ai_tool": [
+        [
+          {
+            "node": "agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp_gmail_client": {
+      "ai_tool": [
+        [
+          {
+            "node": "agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp_calendar_client": {
+      "ai_tool": [
+        [
+          {
+            "node": "agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "404cf9e6-0c5d-4087-b926-7ecf02e81d25",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30283f17854909b1f178ebc281f74453ff6070225c5dc94192ecdf325754b502"
+  },
+  "id": "mr48qaW1X0F85bjfN1DVn",
+  "tags": [
+    {
+      "updatedAt": "2026-02-23T00:22:17.571Z",
+      "createdAt": "2026-02-23T00:22:17.571Z",
+      "id": "bGh7mL9UNDHRasgf",
+      "name": "IA"
+    },
+    {
+      "updatedAt": "2026-02-24T10:12:27.773Z",
+      "createdAt": "2026-02-24T10:12:27.773Z",
+      "id": "rQ8urg8BEunKK5m4",
+      "name": "tool"
+    },
+    {
+      "updatedAt": "2026-02-23T00:22:13.269Z",
+      "createdAt": "2026-02-23T00:22:13.269Z",
+      "id": "tShid93BZZ24ayPv",
+      "name": "agents"
+    }
+  ]
+}

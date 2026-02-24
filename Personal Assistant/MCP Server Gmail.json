@@ -1,0 +1,191 @@
+{
+  "name": "MCP Server Gmail",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        224
+      ],
+      "id": "82e11fc3-e5f1-4341-a545-0de3ed69c30b",
+      "name": "send_email",
+      "webhookId": "61d0dfc6-6449-49a9-82e7-9773f95c8453",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "html",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        224
+      ],
+      "id": "6a50b077-fedb-4e2a-9a51-5b5edfb789ad",
+      "name": "draft_email",
+      "webhookId": "e97e4d22-1235-47b7-a0cd-0c9bff528eed",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 5,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        224
+      ],
+      "id": "4c00ab72-7f63-49ef-afe2-e499f73c83af",
+      "name": "get_messages_gmail",
+      "webhookId": "6bddc719-0e87-46a9-a682-aeb6ea20a500",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        224
+      ],
+      "id": "379f3dfe-8856-4277-9f3a-31090460c0dd",
+      "name": "mark_as_read_email",
+      "webhookId": "61d0dfc6-6449-49a9-82e7-9773f95c8453",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NqYlp8iAweG7ggsg",
+          "name": "gmail_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "path": "afbec4c2-f08b-4dae-b517-bdf4ed2d6efe"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        64,
+        0
+      ],
+      "id": "92ce8bd3-e66a-4a45-88b8-97a2118b11ce",
+      "name": "MCP Server Gmail",
+      "webhookId": "afbec4c2-f08b-4dae-b517-bdf4ed2d6efe",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LIcoIynVRQJ5OJxM",
+          "name": "mcp_header_auth_credentials"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "get_messages_gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Gmail",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "draft_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Gmail",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Gmail",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mark_as_read_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Gmail",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b21537b2-a866-4ce8-9fe0-cd880c9fac9f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30283f17854909b1f178ebc281f74453ff6070225c5dc94192ecdf325754b502"
+  },
+  "id": "v7jNHDuCUc9p65JFHTCLq",
+  "tags": [
+    {
+      "updatedAt": "2026-02-24T10:33:44.732Z",
+      "createdAt": "2026-02-24T10:33:44.732Z",
+      "id": "CVJ6N0LegY7kU932",
+      "name": "server"
+    },
+    {
+      "updatedAt": "2026-02-24T10:33:34.575Z",
+      "createdAt": "2026-02-24T10:33:34.575Z",
+      "id": "EfEU6TtFG4Lg9GaQ",
+      "name": "MCP"
+    }
+  ]
+}

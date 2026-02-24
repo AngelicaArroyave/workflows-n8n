@@ -1,0 +1,176 @@
+{
+  "name": "MCP Server Calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "f2359e56c45c2d21ea02458bc7072b1a4151d6b490b5405087b22aa0963e8f28@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        224
+      ],
+      "id": "f67c603e-62eb-4b50-a14c-544a2e78b969",
+      "name": "create_event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "pkfNtCaBUVxdqF4r",
+          "name": "google_calendar_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "f2359e56c45c2d21ea02458bc7072b1a4151d6b490b5405087b22aa0963e8f28@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "limit": 5,
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        224
+      ],
+      "id": "a49532d5-bcc5-4a6c-9322-bb45ef534092",
+      "name": "get_events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "pkfNtCaBUVxdqF4r",
+          "name": "google_calendar_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "f2359e56c45c2d21ea02458bc7072b1a4151d6b490b5405087b22aa0963e8f28@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        224
+      ],
+      "id": "ffdc2cc2-5a8c-485b-a35e-8ddc856f8c64",
+      "name": "delete_event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "pkfNtCaBUVxdqF4r",
+          "name": "google_calendar_credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "path": "966c76dc-81db-4614-898b-a614959e37be"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        64,
+        0
+      ],
+      "id": "2fd45901-5ff0-47fc-a3ed-3656fdd1e066",
+      "name": "MCP Server Calendar",
+      "webhookId": "966c76dc-81db-4614-898b-a614959e37be",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "LIcoIynVRQJ5OJxM",
+          "name": "mcp_header_auth_credentials"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "create_event": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Calendar",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_events": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Calendar",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete_event": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Calendar",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "941a8394-206a-4a96-9f99-b5ec8c26230b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30283f17854909b1f178ebc281f74453ff6070225c5dc94192ecdf325754b502"
+  },
+  "id": "CaX8FcXxIsDQXGeM",
+  "tags": [
+    {
+      "updatedAt": "2026-02-24T10:33:44.732Z",
+      "createdAt": "2026-02-24T10:33:44.732Z",
+      "id": "CVJ6N0LegY7kU932",
+      "name": "server"
+    },
+    {
+      "updatedAt": "2026-02-24T10:33:34.575Z",
+      "createdAt": "2026-02-24T10:33:34.575Z",
+      "id": "EfEU6TtFG4Lg9GaQ",
+      "name": "MCP"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "name": "Pokemon Finder Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"name\": \"Pikachu\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f859b565-0c03-42ba-ad2d-19917084c50d",
+      "name": "start_initial_data"
+    },
+    {
+      "parameters": {
+        "url": "=https://pokeapi.co/api/v2/pokemon/{{ $json.name.trim().toLowerCase() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b0a8a99c-278d-4cab-9afd-05252a28f3bb",
+      "name": "get_pokemon_data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0c67990a-f9a0-43a2-89b8-d9799a523d36",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "72d5d2b1-c645-40e7-b329-85745ec9c83e",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "be552d22-0e2a-441b-8ad1-c4b3323f3e56",
+              "name": "sprites.back_default",
+              "value": "={{ $json.sprites.back_default }}",
+              "type": "string"
+            },
+            {
+              "id": "0a72d174-71ca-4995-8a30-cca44ac18d67",
+              "name": "sprites.front_default",
+              "value": "={{ $json.sprites.front_default }}",
+              "type": "string"
+            },
+            {
+              "id": "9600b6e0-5162-40a0-8798-0e604198f27a",
+              "name": "weight",
+              "value": "={{ $json.weight }}",
+              "type": "number"
+            },
+            {
+              "id": "56784dcb-fd1b-4609-b790-9cae0e5dc409",
+              "name": "types",
+              "value": "={{ $json.types.map(item => item.type).map(item => item.name) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "4be89010-7653-4957-bd0f-bdafe7454b61",
+      "name": "data_formatting"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "start_initial_data": {
+      "main": [
+        [
+          {
+            "node": "get_pokemon_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_pokemon_data": {
+      "main": [
+        [
+          {
+            "node": "data_formatting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "44702bd8-193a-47a6-9f70-fa109b931c8d",
+  "meta": {
+    "instanceId": "30283f17854909b1f178ebc281f74453ff6070225c5dc94192ecdf325754b502"
+  },
+  "id": "-U3ui92l9wLpApW0lNokY",
+  "tags": [
+    {
+      "updatedAt": "2026-02-24T10:12:27.773Z",
+      "createdAt": "2026-02-24T10:12:27.773Z",
+      "id": "rQ8urg8BEunKK5m4",
+      "name": "tool"
+    }
+  ]
+}
